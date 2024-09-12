@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="./output.css" rel="stylesheet" />
+    <title>purble palace game</title>
+  </head>
+  <body>
+    <div
+      class="flex flex-col justify-center items-center bg-green-100 gap-10 min-h-screen"
+    >
+      <div class="flex flex-row gap-10">
+        <button id="easy" class="font-serif bg-blue-300 w-24 h-12 rounded-lg">
+          EASY
+        </button>
+        <button id="medium" class="font-serif bg-blue-300 w-24 h-12 rounded-lg">
+          MEDIUM
+        </button>
+        <button id="hard" class="font-serif bg-blue-300 w-24 h-12 rounded-lg">
+          HARD
+        </button>
+      </div>
+      <div id="box-container" class="grid grid-cols-4 gap-4"></div>
+    </div>
+
+    <script>
+      function getRandomColor() {
+        const letters = "0123456789ABCDEF";
+        let color = "#";
+        for (let i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+      }
+
+        
+      function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {                      //use shuffle method complex to predict
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];                   //Swap elements
+            }
+        }
+
+   
+
+
+
+
+      function generateBoxes(numBoxes) {
+        const container = document.getElementById("box-container");
+        container.innerHTML = "";
+        // const numCols = Math.ceil(Math.sqrt(numBoxes));
+        // container.style.gridTemplateColumns = `repeat(${numCols}, minmax(0, 1fr))`;
+
+   
+
+        const colors = [];
+        for (let i = 0; i < numBoxes / 2; i++) {          //like 12 boxes half 6 boxes and fill the color
+        const color = getRandomColor();
+        colors.push(color, color);                        //to genrate the pair color 
+                                        
+        }
+  
+        shuffleArray(colors)      
+
+        // colors.sort(() => Math.random() - 0.5);            //boxes add random color use sort method 
+
+        for (let i = 1; i <= numBoxes; i++) {
+          const box = document.createElement("div");
+          box.className =
+            " grid  w-[100px] text-center border p-14 px-20 bg-gray-400  rounded-lg font-bold";
+          box.id = `box${i}`;
+          box.textContent = ""; 
+          // box.style.background = colors[i - 1];
+          // box.dataset.color = colors[i - 1];
+
+          // box.style.background = getRandomColor();          
+          container.appendChild(box);
+        }
+      }
+
+      document.getElementById("easy").addEventListener("click", () => {
+        const numBoxes = 12;
+        generateBoxes(numBoxes);
+      });
+
+      document.getElementById("medium").addEventListener("click", () => {
+        const numBoxes = 16;
+        generateBoxes(numBoxes);
+      });
+
+      document.getElementById("hard").addEventListener("click", () => {
+        const numBoxes = 20 ;
+        generateBoxes(numBoxes);
+      });
+    </script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+

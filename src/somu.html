@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="./output.css" rel="stylesheet" />
+  <title>Purple Palace Game</title>
+  <style>
+    .card {
+      width: 100px;
+      height: 100px;
+      perspective: 1000px;
+    }
+    .card-inner {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s;
+    }
+    .card.flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+    }
+    .card-front {
+      background-color: gray;
+    }
+    .card-back {
+      background-color: var(--card-color);
+      transform: rotateY(180deg);
+    }
+  </style>
+</head>
+<body class="bg-blue-500 p-10">
+  <div class="flex flex-col justify-center items-center bg-green-100 gap-10 min-h-screen">
+    <div class="flex flex-row gap-10 mb-10">
+      <button id="easy" class="font-serif bg-blue-300 w-24 h-12 text-white rounded-lg hover:bg-blue-400 transition">
+        EASY
+      </button>
+      <button id="medium" class="font-serif bg-blue-300 w-24 h-12 text-white rounded-lg hover:bg-blue-400 transition">
+        MEDIUM
+      </button>
+      <button id="hard" class="font-serif bg-blue-300 w-24 h-12 text-white rounded-lg hover:bg-blue-400 transition">
+        HARD
+      </button>
+    </div>
+    <div id="box-container" class="inline-grid gap-4"></div>
+  </div>
+
+  <script>
+    let firstCard = null;
+    let secondCard = null;
+    let matchedCards = 0;
+    let totalPairs = 0;
+    let lockBoard = false; // To prevent further flipping while checking
+
+    function getRandomColor() {
+      const letters = "0123456789ABCDEF";
+      let color = "#";
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    function generateBoxes(numBoxes, colors) {
+      const container = document.getElementById("box-container");
+      container.innerHTML = "";
+
+      // Calculate the number of columns for the grid
+      const numCols = Math.ceil(Math.sqrt(numBoxes));
+      container.style.gridTemplateColumns = `repeat(${numCols}, minmax(0, 1fr))`;
+
+      // Create an array of colors to fill the boxes
+      const colorList = colors.flatMap((color) =>
+        Array(numBoxes / colors.length).fill(color)
+      );
+      colorList.length = numBoxes;
+
+      // Shuffle the colorList
+      for (let i = colorList.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [colorList[i], colorList[j]] = [colorList[j], colorList[i]];
+      }
+
+      // Create boxes and add them to the container
+      for (let i = 0; i < colorList.length; i++) {
+        const color = colorList[i];
+        const box = document.createElement("div");
+        box.className = "card";
+        const inner = document.createElement("div");
+        inner.className = "card-inner";
+        
+        const front = document.createElement("div");
+        front.className = "card-face card-front";
+        
+        const back = document.createElement("div");
+        back.className = "card-face card-back";
+        back.style.setProperty("--card-color", color);
+        
+        inner.appendChild(front);
+        inner.appendChild(back);
+        box.appendChild(inner);
+        box.dataset.color = color;
+        box.addEventListener("click", flipCard);
+        container.appendChild(box);
+      }
+
+      totalPairs = numBoxes / 2;
+      matchedCards = 0;
+    }
+
+    function flipCard(event) {
+      if (lockBoard) return; // Prevent further flipping if the board is locked
+
+      const card = event.currentTarget;
+
+      if (card === firstCard || card.classList.contains("flipped")) return;
+
+      card.classList.add("flipped");
+
+      if (!firstCard) {
+        firstCard = card;
+      } else {
+        secondCard = card;
+        checkForMatch();
+      }
+    }
+
+    function checkForMatch() {
+      lockBoard = true; //Lock the board while checking for a match
+
+      const firstColor = firstCard.dataset.color;
+      const secondColor = secondCard.dataset.color;
+
+      if (firstColor === secondColor) {
+        matchedCards++;
+        firstCard = null;
+        secondCard = null;
+        if (matchedCards === totalPairs) {
+          setTimeout(() => {
+            alert("You win the game!");
+            lockBoard = false;
+          }, 500); // Delay alert to allow the user to see the last match
+        } else {
+          lockBoard = false;
+        }
+      } else {
+        setTimeout(() => {
+          firstCard.classList.remove("flipped");
+          secondCard.classList.remove("flipped");
+          firstCard = null;
+          secondCard = null;
+          lockBoard = false;
+        }, 1000);
+      }
+    }
+
+    document.getElementById("easy").addEventListener("click", () => {
+      const numBoxes = 12;
+      const numColors = 6;
+      const colors = Array.from({ length: numColors }, () => getRandomColor());
+      generateBoxes(numBoxes, colors);
+    });
+
+    document.getElementById("medium").addEventListener("click", () => {
+      const numBoxes = 16;
+      const numColors = 8;
+      const colors = Array.from({ length: numColors }, () => getRandomColor());
+      generateBoxes(numBoxes, colors);
+    });
+
+    document.getElementById("hard").addEventListener("click", () => {
+      const numBoxes = 20;
+      const numColors = 10;
+      const colors = Array.from({ length: numColors }, () => getRandomColor());
+      generateBoxes(numBoxes, colors);
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+
