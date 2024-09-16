@@ -1,108 +1,234 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="./output.css" rel="stylesheet" />
-    <title>purble palace game</title>
-  </head>
-  <body>
-    <div
-      class="flex flex-col justify-center items-center bg-green-100 gap-10 min-h-screen"
-    >
-      <div class="flex flex-row gap-10">
-        <button id="easy" class="font-serif bg-blue-300 w-24 h-12 rounded-lg">
-          EASY
-        </button>
-        <button id="medium" class="font-serif bg-blue-300 w-24 h-12 rounded-lg">
-          MEDIUM
-        </button>
-        <button id="hard" class="font-serif bg-blue-300 w-24 h-12 rounded-lg">
-          HARD
-        </button>
-      </div>
-      <div id="box-container" class="grid grid-cols-4 gap-4"></div>
-    </div>
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link href="./output.css" rel="stylesheet" />
+      <title>purble palace game</title>
+    </head>
+    <body class=" overflow-hidden bg-gradient-to-r from-purple-400 via-pink-500 to-red-500" >
+       <div
+        class="flex flex-col justify-center items-center gap-4 h-screen"
+      >
+      
 
-    <script>
-      function getRandomColor() {
-        const letters = "0123456789ABCDEF";
-        let color = "#";
-        for (let i = 0; i < 6; i++) {
-          color += letters[Math.floor(Math.random() * 16)];
+      <h1 class="font-serif hover:bg-blue-300 "> WELCOME TO THE PURBLE PALACE GAME </h1>
+      
+
+        <div class="flex flex-row gap-10">
+          <button id="HOM"     class=" font-serif       bg-cyan-300 w-24 h-12 rounded-lg  hover:bg-cyan-400 ">
+            HOME
+          </button>
+       
+          <button id="easy"    class=" font-serif      bg-blue-300 w-24 h-12 rounded-lg hover:bg-cyan-400">
+            EASY 
+          </button>
+          <button id="medium"   class="   font-serif    bg-blue-300 w-24 h-12 rounded-lg  hover:bg-cyan-400">
+            MEDIUM
+          </button>
+          <button id="hard" class=" font-serif    bg-blue-300 w-24 h-12 rounded-lg  hover:bg-cyan-400">
+            HARD
+          </button>
+
+    
+        </div>
+      <div class="flex flex-col items-center gap-5">
+        <div class="flex gap-5">
+          <button class="font-serif bg-red-600 rounded-lg w-28 h-12 text-2xl hidden" id="move" ></button>
+        
+          <button class="font-serif bg-red-600 rounded-lg w-28 h-12 text-2xl hidden " id="click" >click:0</button>
+        </div>
+
+      <img id="img" class="" src="game.png" alt="">
+
+        <div id="box-container" class="grid grid-cols-4 gap-4 ">
+
+        </div>
+      </div>
+
+      <script>
+        document.addEventListener("DOMContentLoaded",function(){
+
+
+  
+   document.getElementById("HOM").addEventListener("click", function(){ 
+      window.location.reload();
+   
+   })    
+   
+    let selectedBoxes = [];
+    let canClick = true;
+    let moves = 0;
+    let click = 0;
+
+
+     function pairmatch(){
+          moves++;
+          document.getElementById("move").innerHTML = `moves : ${moves}`
+    
         }
-        return color;
+
+        function check(){
+          click++;
+          document.getElementById("click").innerHTML = `click : ${click}`
+    
+        }
+
+        function getRandomColor() {
+          const letters = "0123456789ABCDEF";
+          let color = "#";
+          for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+          }
+          return color;
+        }
+
+          
+        function shuffleArray(array) {
+              for (let i = array.length - 1; i > 0; i--) {                      //use shuffle method complex to predict
+                  const j = Math.floor(Math.random() * (i + 1));
+                  [array[i], array[j]] = [array[j], array[i]];                   //Swap elements
+            //  console.log(array,"match")
+                }
+          }
+
+  
+    
+        function generateBoxes(numBoxes) {
+          const container = document.getElementById("box-container");
+          container.innerHTML = "";
+
+          // const numCols = Math.ceil(Math.sqrt(numBoxes));
+          // container.style.gridTemplateColumns = `repeat(${numCols}, minmax(0, 1fr))`;
+
+          const colors = [];
+          for (let i = 0; i < numBoxes / 2; i++) {          //like 12 boxes half 6 boxes and fill the color
+          const color = getRandomColor();
+          colors.push(color, color);                        //to genrate the pair color                                
+          }
+    
+          shuffleArray(colors)      
+
+          // colors.sort(() => Math.random() - 0.5);             //boxes add random color use sort method 
+
+          for (let i = 1; i <= numBoxes; i++) {
+            const box = document.createElement("div");
+            box.className =
+              " grid  w-[80px] text-center border  h-[70px] bg-gray-400   rounded-lg font-bold";
+            box.id = `box${i}`;
+            box.textContent = ""; 
+        
+            // box.style.babox.style.background = ' '; ckground = colors[i - 1];
+
+            box.dataset.color = colors[i-1];
+        
+
+            // box.style.background = getRandomColor();  
+            
+            box.addEventListener("click", function () {
+   
+              if (!canClick || selectedBoxes.includes(box)) return;
+              box.style.backgroundColor =  box.dataset.color
+              selectedBoxes.push(box);
+              check();
+              // console.log(`Box ${i} color: ${box.dataset.color}`);
+         
+      
+              if (selectedBoxes.length === 2) {
+                
+             canClick = false;
+             setTimeout(checkMatch, 1000);
+          }
+                });
+          
+            container.appendChild(box);
+          } 
+         
+         document.getElementById("easy").innerHTML= "Restart";  
+         document.getElementById("medium").innerHTML= "Restart";
+          document.getElementById("hard").innerHTML= "Restart";
+         document.getElementById("move").classList.remove("hidden");
+          document.getElementById("click").classList.remove("hidden");
+          document.getElementById("img").classList.add("hidden");
+      
+        }
+
+
+
+      function checkMatch() {
+
+      const [box1, box2] = selectedBoxes;
+      
+      if (box1.dataset.color === box2.dataset.color) {
+        // Keep boxes open if they match
+     
+        pairmatch();
+        box1.style.pointerEvents = 'none';
+        box2.style.pointerEvents = 'none';
+     
+      } else {
+        // Hide boxes if they don't match
+        box1.style.backgroundColor = '';
+        box2.style.backgroundColor = '';
       }
+
+      selectedBoxes = [];
+      canClick = true;
+       } 
+
+ 
+          document.getElementById("easy").addEventListener("click", () => {
+          moves=0;
+          document.getElementById("move").innerHTML = `moves : 0`;
+
+          click= 0;
+          document.getElementById("click").innerHTML = `clicks : 0`;
+
+          document.getElementById("medium").classList.add("hidden")
+          document.getElementById("hard").classList.add("hidden")
+          document.getElementById("img").classList.add("hidden");
+          generateBoxes(12);
+
+        });
+
+        document.getElementById("medium").addEventListener("click", () => {
+          moves=0;
+          document.getElementById("move").innerHTML = `moves : 0`;
+          click= 0;
+          document.getElementById("click").innerHTML = `clicks : 0`;
+          document.getElementById("easy").classList.add("hidden")
+          document.getElementById("hard").classList.add("hidden")
+          document.getElementById("img").classList.add("hidden");
+          generateBoxes(16);
+        });
+
+        document.getElementById("hard").addEventListener("click", () => {
+          moves= 0;
+          document.getElementById("move").innerHTML = `moves : 0`;
+          click= 0;
+          document.getElementById("click").innerHTML = `clicks : 0`;
+        document.getElementById("easy").classList.add("hidden")
+        document.getElementById("medium").classList.add("hidden")
+        document.getElementById("img").classList.add("hidden");
+
+          generateBoxes(20);
+        });
+    
+
+  
 
         
-      function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {                      //use shuffle method complex to predict
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];                   //Swap elements
-            }
-        }
-
-   
+      });
+      </script>
+    </body>
+  </html>
 
 
 
 
-      function generateBoxes(numBoxes) {
-        const container = document.getElementById("box-container");
-        container.innerHTML = "";
-        // const numCols = Math.ceil(Math.sqrt(numBoxes));
-        // container.style.gridTemplateColumns = `repeat(${numCols}, minmax(0, 1fr))`;
 
-   
 
-        const colors = [];
-        for (let i = 0; i < numBoxes / 2; i++) {          //like 12 boxes half 6 boxes and fill the color
-        const color = getRandomColor();
-        colors.push(color, color);                        //to genrate the pair color 
-                                        
-        }
   
-        shuffleArray(colors)      
-
-        // colors.sort(() => Math.random() - 0.5);            //boxes add random color use sort method 
-
-        for (let i = 1; i <= numBoxes; i++) {
-          const box = document.createElement("div");
-          box.className =
-            " grid  w-[100px] text-center border p-14 px-20 bg-gray-400  rounded-lg font-bold";
-          box.id = `box${i}`;
-          box.textContent = ""; 
-          // box.style.background = colors[i - 1];
-          // box.dataset.color = colors[i - 1];
-
-          // box.style.background = getRandomColor();          
-          container.appendChild(box);
-        }
-      }
-
-      document.getElementById("easy").addEventListener("click", () => {
-        const numBoxes = 12;
-        generateBoxes(numBoxes);
-      });
-
-      document.getElementById("medium").addEventListener("click", () => {
-        const numBoxes = 16;
-        generateBoxes(numBoxes);
-      });
-
-      document.getElementById("hard").addEventListener("click", () => {
-        const numBoxes = 20 ;
-        generateBoxes(numBoxes);
-      });
-    </script>
-  </body>
-</html>
-
-
-
-
-
-
 
 
 
